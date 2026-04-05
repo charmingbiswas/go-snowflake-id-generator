@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: snowflake-service
+spec:
+  clusterIP: None
+  selector:
+    app: snowflake-statefulset
+  ports:
+  - name: snowflake-statefulset
+    protocol: TCP
+    port: 8000
+    targetPort: 8000

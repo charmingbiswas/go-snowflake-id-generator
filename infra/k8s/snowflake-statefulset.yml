@@ -1,0 +1,36 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: snowflake-statefulset
+spec:
+  serviceName: snowflake-service
+  replicas: 3
+  selector:
+    matchLabels:
+      app: snowflake-statefulset
+  template:
+    metadata:
+      labels:
+        app: snowflake-statefulset
+    spec:
+      containers:
+      - name: snowflake-statefulset
+        image: snowflake:v1
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+        env:
+        - name: SNOWFLAKE_MACHINE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "echo $SNOWFLAKE_MACHINE_ID"]
+        livenessProbe:
+          httpGet:
+            path: /snowflake/health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10

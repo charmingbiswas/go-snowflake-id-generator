@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -81,7 +82,9 @@ func GetMachineIdFromEnv() (int64, error) {
 		return 0, fmt.Errorf("no env variable with key %s found", snowflakeMachineIDEnvKey)
 	}
 
-	id, err := strconv.ParseInt(value, 10, 64)
+	splitValues := strings.Split(value, "-")
+
+	id, err := strconv.ParseInt(splitValues[len(splitValues)-1], 10, 64)
 	if err != nil {
 		return 0, fmt.Errorf("invalid %s key found: %d", snowflakeMachineIDEnvKey, id)
 	}
