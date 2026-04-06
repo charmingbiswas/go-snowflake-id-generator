@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -30,12 +31,13 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		parsed := snowflake.Parse(id)
+		fmt.Printf("Generated new snowflake - ID: %d | Time: %s | Node: %d | Sequence: %d\n", id, parsed.TimeStamp.Format(time.RFC3339Nano), parsed.MachineId, parsed.Sequence)
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
-			"success":   true,
-			"id":        id,
-			"timestamp": time.Now().UnixMilli(),
+			"success":     true,
+			"snowflakeId": id,
 		})
 	})
 
