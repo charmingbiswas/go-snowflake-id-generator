@@ -7,6 +7,6 @@ spec:
   selector:
     app: snowflake-statefulset
   ports:
-  - port: 8000
-    targetPort: 8000
-    nodePort: 30001
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30001

@@ -13,4 +13,10 @@ deploy:
 destroy:
 	kubectl delete -f infra/k8s/snowflake-service.yml -f infra/k8s/snowflake-statefulset.yml
 
-.PHONY: all build image
+install:
+	helm install snowflake-helm-chart ./infra/snowflake-helm -f ./infra/snowflake-helm/values.yaml
+
+uninstall:
+	helm uninstall snowflake-helm-chart
+
+.PHONY: all build image deploy destroy install uninstall
