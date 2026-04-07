@@ -1,20 +1,20 @@
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: "{{ .Values.snowflakeStatefulSetName }}"
+  name: "{{ .Values.snowflakeStatefulsetName }}"
 spec:
   serviceName: "{{ .Values.snowflakeServiceName }}"
   replicas: 3
   selector:
     matchLabels:
-      app: "{{ .Values.snowflakeStatefulSetName }}"
+      app: "{{ .Values.snowflakeStatefulsetName }}"
   template:
     metadata:
       labels:
-        app: "{{ .Values.snowflakeStatefulSetName }}"
+        app: "{{ .Values.snowflakeStatefulsetName }}"
     spec:
       containers:
-        - name: "{{ .Values.snowflakeStatefulSetName }}"
+        - name: "{{ .Values.snowflakeStatefulsetName }}"
           image: snowflake:v1
           imagePullPolicy: Never
           ports:
@@ -24,13 +24,9 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          lifecycle:
-            postStart:
-              exec:
-                command: [ "/bin/sh", "-c", "echo $SNOWFLAKE_MACHINE_ID" ]
           livenessProbe:
             httpGet:
               path: /snowflake/health
-              port: 8000
+              port: {{ .Values.port | int }}
             initialDelaySeconds: 5
             periodSeconds: 10

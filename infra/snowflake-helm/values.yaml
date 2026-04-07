@@ -1,5 +1,8 @@
 snowflakeServiceName: snowflake-service
-snowflakeStatefulSetName: snowflake-statefulset
+snowflakeStatefulsetName: snowflake-statefulset
 env:
   name:
     key: SNOWFLAKE_MACHINE_ID
+port: 8000
+targetPort: 8000
+nodePort: 30001

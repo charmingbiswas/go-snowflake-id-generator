@@ -19,4 +19,7 @@ install:
 uninstall:
 	helm uninstall snowflake-helm-chart
 
+upgrade:
+	helm upgrade snowflake-helm-chart ./infra/snowflake-helm -f ./infra/snowflake-helm/values.yaml
+
 .PHONY: all build image deploy destroy install uninstall

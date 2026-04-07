@@ -7,7 +7,7 @@
     "editor.autoIndent": "keep",
     "diffEditor.ignoreTrimWhitespace": false,
     "editor.defaultColorDecorators": "never",
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "editor.quickSuggestions": {
       "strings": true,
       "other": true,
