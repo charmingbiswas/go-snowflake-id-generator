@@ -1,1 +1,5 @@
-snowflakeservicename: snowflake-service
+snowflakeServiceName: snowflake-service
+snowflakeStatefulSetName: snowflake-statefulset
+env:
+  name:
+    key: SNOWFLAKE_MACHINE_ID

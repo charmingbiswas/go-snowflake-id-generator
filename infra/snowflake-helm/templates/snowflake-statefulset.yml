@@ -1,26 +1,26 @@
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: snowflake-statefulset
+  name: "{{ .Values.snowflakeStatefulSetName }}"
 spec:
-  serviceName: snowflake-service
+  serviceName: "{{ .Values.snowflakeServiceName }}"
   replicas: 3
   selector:
     matchLabels:
-      app: snowflake-statefulset
+      app: "{{ .Values.snowflakeStatefulSetName }}"
   template:
     metadata:
       labels:
-        app: snowflake-statefulset
+        app: "{{ .Values.snowflakeStatefulSetName }}"
     spec:
       containers:
-        - name: snowflake-statefulset
+        - name: "{{ .Values.snowflakeStatefulSetName }}"
           image: snowflake:v1
           imagePullPolicy: Never
           ports:
             - containerPort: 8000
           env:
-            - name: SNOWFLAKE_MACHINE_ID
+            - name: "{{ .Values.env.name.key }}"
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
