@@ -20,9 +20,9 @@ const (
 )
 
 /*
-	int64(-1) ^ (int64(-1) << N) is a classic bitmask trick. -1 in two's complement is all 1-bits.
+	int64(-1) ^ (int64(-1) << N) is a classic bitmask trick. -1 is all 1-bits.
 	Shifting left by N clears the lower N bits, then XOR-ing with -1 flips everything — leaving exactly N bits set.
-	This gives you the maximum value for that field without hardcoding magic numbers.
+	This gives you the maximum value for that field without hardcoding.
 */
 
 type node struct {
