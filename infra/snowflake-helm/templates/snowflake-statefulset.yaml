@@ -15,8 +15,7 @@ spec:
     spec:
       containers:
         - name: "{{ .Values.snowflakeStatefulsetName }}"
-          image: snowflake:v1
-          imagePullPolicy: Never
+          image: riyanshbiswas/golang-snowflake-id-generator:latest
           ports:
             - containerPort: 8000
           env:
