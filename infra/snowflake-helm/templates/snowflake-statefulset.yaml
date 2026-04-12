@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: "{{ .Values.snowflakeStatefulsetName }}"
-          image: riyanshbiswas/golang-snowflake-id-generator:latest
+          image: "{{ .Values.imageName }}:{{ .Values.imageTag }}"
           ports:
             - containerPort: 8000
           env:
