@@ -8,3 +8,4 @@ targetPort: 8000
 nodePort: 30001
 imageName: riyanshbiswas/golang-snowflake-id-generator
 imageTag: latest
+replicas: 3

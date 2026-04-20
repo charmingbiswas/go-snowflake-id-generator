@@ -4,7 +4,7 @@ metadata:
   name: "{{ .Values.snowflakeStatefulsetName }}"
 spec:
   serviceName: "{{ .Values.snowflakeServiceName }}"
-  replicas: 3
+  replicas: {{ .Values.replicas | int }}
   selector:
     matchLabels:
       app: "{{ .Values.snowflakeStatefulsetName }}"
