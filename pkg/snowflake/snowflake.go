@@ -82,7 +82,7 @@ func GetMachineIdFromEnv() (int64, error) {
 		return 0, fmt.Errorf("no env variable with key %s found", snowflakeMachineIDEnvKey)
 	}
 
-	splitValues := strings.Split(value, "-")
+	splitValues := strings.Split(value, "-") // env variable will be set by kubernetes statefulset which looks like pod-abcd-0
 
 	id, err := strconv.ParseInt(splitValues[len(splitValues)-1], 10, 64)
 	if err != nil {

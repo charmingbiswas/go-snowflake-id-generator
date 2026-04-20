@@ -22,4 +22,7 @@ uninstall:
 upgrade:
 	helm upgrade snowflake-helm-chart ./infra/snowflake-helm -f ./infra/snowflake-helm/values.yaml
 
-.PHONY: all build image deploy destroy install uninstall
+test:
+	go test -v ./...
+
+.PHONY: all build image deploy destroy install uninstall test
