@@ -10,13 +10,13 @@ import (
 )
 
 const (
-	epoch          = int64(1700000000000)
-	machineIdBits  = 10
-	sequenceBits   = 12
-	maxNodes       = int64(-1) ^ (int64(-1) << machineIdBits)
-	maxSequence    = int64(-1) ^ (int64(-1) << sequenceBits)
-	nodeShift      = sequenceBits
-	timestampShift = machineIdBits + sequenceBits
+	EPOCH           = int64(1700000000000)
+	MACHINE_ID_BITS = 10
+	SEQUENCE_BITS   = 12
+	MAX_NODES       = int64(-1) ^ (int64(-1) << MACHINE_ID_BITS)
+	MAX_SEQUENCE    = int64(-1) ^ (int64(-1) << SEQUENCE_BITS)
+	NODE_SHIFT      = SEQUENCE_BITS
+	TIMESTAMP_SHIFT = MACHINE_ID_BITS + SEQUENCE_BITS
 )
 
 /*
@@ -25,42 +25,50 @@ const (
 	This gives you the maximum value for that field without hardcoding.
 */
 
+type monotonicClock struct {
+	startWall int64     // wall clock time
+	startMono time.Time // monotonic clock time
+}
+
 type node struct {
 	mu            sync.Mutex
 	machineId     int64
 	sequence      int64
 	lastTimeStamp int64
+	monoClock     *monotonicClock
 }
 
 func NewNode(machineId int64) (*node, error) {
-	if machineId < 0 || machineId > maxNodes {
-		return nil, fmt.Errorf("machine Id must be between 0 and %d", maxNodes)
+	if machineId < 0 || machineId > MAX_NODES {
+		return nil, fmt.Errorf("machine Id must be between 0 and %d", MAX_NODES)
 	}
-	return &node{machineId: machineId}, nil
+	return &node{machineId: machineId, monoClock: newMonoClock()}, nil
 }
 
 func (n *node) GenerateSnowflakeId() (int64, error) {
 	n.mu.Lock()
 	defer n.mu.Unlock()
 
-	now := time.Now().UnixMilli()
+	now := n.monoClock.nowMs() // get's the monotonic clock value, never goes back hence not affected by NTP syncs
 
 	if now < n.lastTimeStamp {
 		// clock drifted backwards
+		// this case should ideally not occur since we are using monotonic clocks
+		// keeping it in as a safety fallback
 		return 0, fmt.Errorf("clock moved backwards by %d, please try again", n.lastTimeStamp-now)
 	}
 
 	if now == n.lastTimeStamp {
-		n.sequence = (n.sequence + 1) & maxSequence
+		n.sequence = (n.sequence + 1) & MAX_SEQUENCE
 		if n.sequence == 0 {
 			// meaning you ran out of sequences for the current timestamp
 			// wait until next millisecond
 			for now <= n.lastTimeStamp {
-				now = time.Now().UnixMilli()
+				now = n.monoClock.nowMs()
 			}
 		}
 	} else {
-		n.sequence = 0
+		n.sequence = 0 // Reset the sequence
 	}
 
 	n.lastTimeStamp = now
@@ -71,7 +79,7 @@ func (n *node) GenerateSnowflakeId() (int64, error) {
 		sequence — sits in the lowest 12 bits (no shift needed)
 		The bitwise OR (|) merges all three into a single int64.
 	*/
-	snowflakeId := (now-epoch)<<timestampShift | n.machineId<<nodeShift | n.sequence
+	snowflakeId := now<<TIMESTAMP_SHIFT | n.machineId<<NODE_SHIFT | n.sequence
 
 	return snowflakeId, nil
 }
@@ -90,4 +98,20 @@ func GetMachineIdFromEnv() (int64, error) {
 	}
 
 	return id, nil
+}
+
+func newMonoClock() *monotonicClock {
+	now := time.Now()
+	return &monotonicClock{
+		startWall: now.UnixMilli() - EPOCH,
+		startMono: now,
+	}
+}
+
+// returns milliseconds passed using monotonic component
+// this is immune to clokc skew and clock drifts
+func (mc *monotonicClock) nowMs() int64 {
+	// time.Since used the monotonic clock
+	elapsedTime := time.Since(mc.startMono).Milliseconds()
+	return mc.startWall + elapsedTime // we add the elaspsedTime to startWall since monotonic duration by itself has no value. To generate a snowflake ID it need real clock time.
 }

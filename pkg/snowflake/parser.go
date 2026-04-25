@@ -9,10 +9,10 @@ type parsed struct {
 }
 
 func Parse(snowflakeId int64) *parsed {
-	timeStamp := (snowflakeId >> timestampShift) + epoch
+	timeStamp := (snowflakeId >> TIMESTAMP_SHIFT) + EPOCH
 	return &parsed{
 		TimeStamp: time.UnixMilli(timeStamp),
-		MachineId: (snowflakeId >> nodeShift) & maxNodes,
-		Sequence:  snowflakeId & maxSequence,
+		MachineId: (snowflakeId >> NODE_SHIFT) & MAX_NODES,
+		Sequence:  snowflakeId & MAX_SEQUENCE,
 	}
 }
